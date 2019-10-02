@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Windows.Forms;
@@ -16,19 +17,17 @@ namespace Updater
 
         private WebClient _client;
 
-        private readonly string _baseUrl;
+        private readonly string _downloadUrl;
 
-        private readonly Version _version;
-
-        public FormUpdater(string currentProgram, Version version, string baseUrl)
+        public FormUpdater(string currentProgram, Version version, string downloadUrl)
         {
             InitializeComponent();
+            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             _newPath          = currentProgram + ".new";
             _exePath          = currentProgram;
             _backupPath       = currentProgram + ".bak";
             labelVersion.Text = version.ToString();
-            _baseUrl = baseUrl;
-            _version = version;
+            _downloadUrl      = downloadUrl;
         }
 
         private void FormUpdater_Load(object sender, EventArgs e)
@@ -36,7 +35,7 @@ namespace Updater
             _client = new WebClient();
             _client.DownloadFileCompleted   += client_DownloadFileCompleted;
             _client.DownloadProgressChanged += client_DownloadProgressChanged;
-            _client.DownloadFileAsync(new Uri($"http://{_baseUrl}/bin/{Utils.SoftwareName}.v{_version}.exe"), _newPath);
+            _client.DownloadFileAsync(new Uri(_downloadUrl), _newPath);
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)
